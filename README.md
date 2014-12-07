@@ -350,12 +350,12 @@ var postcss = require('postcss');
 var css = postcss.parse('a { color: black }');
 ```
 
-You can easily make changes to this AST. Use `css.childs` to get children.
+You can easily make changes to this AST. Use `css.nodes` to get children.
 Properties `rule.selector`, `decl.prop`, `decl.value`, `atrule.name`
 and `atrule.params` contain data.
 
 ```js
-css.childs[0].value = 'white';
+css.nodes[0].value = 'white';
 ```
 
 After changes have been made you can get the new CSS and a source map reflecting
@@ -655,7 +655,7 @@ to the `process` or `parse` methods) and position:
 
 ```js
 var root = postcss.parse(css, { from: 'main.css' });
-var rule = root.childs[0];
+var rule = root.nodes[0];
 
 rule.source.file  //=> 'main.css'
 rule.source.start //=> { line: 5,  position: 1 }
@@ -680,11 +680,11 @@ is bodiless.
 ```js
 var root = postcss.parse("a {\n  color: black;\n}\n");
 
-root.childs[0].between           //=> " " between selector and {
-root.childs[0].childs[0].before  //=> "\n  " before color: black
-root.childs[0].childs[0].between //=> ": " between property name and value
-root.childs[0].after             //=> "\n" before }
-root.after                       //=> "\n" from end of file
+root.nodes[0].between          //=> " " between selector and {
+root.nodes[0].nodes[0].before  //=> "\n  " before color: black
+root.nodes[0].nodes[0].between //=> ": " between property name and value
+root.nodes[0].after            //=> "\n" before }
+root.after                     //=> "\n" from end of file
 ```
 
 The simplest way to minify CSS is to set `before`, `between` and `after`
@@ -747,7 +747,7 @@ rule.toString() //=> '.link b {}' you change value and origin comment was gone
 
 ### Containers
 
-`Root`, `AtRule` and `Rule` nodes can contain children in `childs` property.
+`Root`, `AtRule` and `Rule` nodes can contain children in `nodes` property.
 
 There are some common methods to perform work on children:
 
@@ -784,13 +784,13 @@ in other nodes.
 All children contain a `parent` property which indicates the parent node:
 
 ```js
-rule.childs[0].parent == rule;
+rule.nodes[0].parent == rule;
 ```
 
 All children have a `removeSelf()` method:
 
 ```js
-rule.childs[0].removeSelf();
+rule.nodes[0].removeSelf();
 ```
 
 But invoking the `remove(index)` method on the parent is much faster:
@@ -827,7 +827,7 @@ So you can mutate the children during iteration and PostCSS will fix
 the current index:
 
 ```js
-rule.childs.forEach(function (decl, i) {
+rule.nodes.forEach(function (decl, i) {
     rule.prepend( decl.clone() );
     // Will infinitely cycle as prepending the current declaration will
     // cause the second and successive indexes to interact with the
@@ -876,7 +876,7 @@ You can break out from the iteration by returning `false`.
 ### Root Node
 
 `Root` node contains the entire CSS tree. Its children can only be `Comment`,
-`AtRule`, or `Rule` nodes in the `childs` property.
+`AtRule`, or `Rule` nodes in the `nodes` property.
 
 You can create a new root using the shortcut:
 
@@ -961,7 +961,7 @@ a {
 ```
 
 `Rule` nodes have a `selector` property and contain their `Declaration`
-and `Comment` children within the `childs` property.
+and `Comment` children within the `nodes` property.
 
 They also possess a `selectors` shortcut, which returns an array:
 
